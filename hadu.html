@@ -5,52 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Article Downloader - Pratinjau & Unduh</title>
     <style>
-        /* SEMUA KODE CSS DARI FILE ASLI DITEMPATKAN DI SINI JUGA */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+
+        .page-wrapper {
+            display: grid;
+            grid-template-columns: 300px 600px 300px; /* Lebar tetap untuk iklan samping dan tengah */
+            grid-template-rows: auto auto auto; /* Tinggi otomatis */
+            gap: 20px;
+            width: 1200px; /* Lebar total untuk desktop */
+            max-width: 100%; /* Responsif agar tidak melebihi layar */
+        }
+
+        .ad-slot {
+            background: rgba(0, 0, 0, 0.1);
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px; /* Sesuaikan tinggi iklan */
+            color: white;
+            font-size: 1.2em;
+            border-radius: 15px;
+            text-align: center;
+            padding: 10px;
             overflow: hidden;
         }
-        
+
+        .ad-slot-top {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+            min-height: 100px; /* Sesuaikan tinggi iklan atas */
+        }
+
+        .ad-slot-bottom {
+            grid-column: 2 / 3;
+            grid-row: 3 / 4;
+            min-height: 100px; /* Sesuaikan tinggi iklan bawah */
+        }
+
+        .ad-slot-left {
+            grid-column: 1 / 2;
+            grid-row: 1 / 4;
+        }
+
+        .ad-slot-right {
+            grid-column: 3 / 4;
+            grid-row: 1 / 4;
+        }
+
+        .container {
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: visible; /* Diubah agar floating button tidak terpotong */
+            position: relative;
+        }
+
         .header {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             text-align: center;
             padding: 40px 20px;
         }
-        
+
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
             font-weight: 700;
         }
-        
+
         .header p {
             font-size: 1.1em;
             opacity: 0.9;
         }
 
-        /* Halaman Kedua */
         .second-page {
             padding: 40px;
         }
-        
+
         .preview-box {
             background: #f8f9fa;
             border: 1px solid #e0e0e0;
@@ -60,13 +109,12 @@
             max-height: 400px;
             overflow-y: auto;
             position: relative;
-            /* MODIFIKASI 2: Menambahkan proteksi anti-seleksi dan copy */
-            user-select: none; /* Standar */
-            -webkit-user-select: none; /* Chrome, Safari, Opera */
-            -moz-user-select: none; /* Firefox */
-            -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
-        
+
         .preview-title {
             font-size: 24px;
             font-weight: bold;
@@ -75,17 +123,17 @@
             border-bottom: 2px solid #667eea;
             padding-bottom: 10px;
         }
-        
+
         .preview-content {
             line-height: 1.8;
             color: #555;
             text-align: justify;
         }
-        
+
         .download-section {
             text-align: center;
         }
-        
+
         .download-buttons {
             display: flex;
             gap: 15px;
@@ -93,7 +141,7 @@
             flex-wrap: wrap;
             margin-bottom: 30px;
         }
-        
+
         .download-btn {
             background: white;
             border: 2px solid #667eea;
@@ -106,22 +154,20 @@
             transition: all 0.3s;
             min-width: 120px;
         }
-        
+
         .download-btn:hover {
             background: #667eea;
             color: white;
         }
-        
+
         .download-btn.selected {
             background: #667eea;
             color: white;
         }
-        
-        /* Floating Download Button */
+
         .floating-download {
             position: fixed;
             bottom: 30px;
-            /* MODIFIKASI 3: Membuat tombol ke tengah presisi */
             left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(45deg, #667eea, #764ba2);
@@ -136,15 +182,14 @@
             z-index: 1000;
             transition: all 0.3s;
             display: none;
-            white-space: nowrap; /* Mencegah teks turun baris */
+            white-space: nowrap;
         }
-        
+
         .floating-download:hover {
-            transform: translateX(-50%) translateY(-3px); /* Gabungkan transform */
+            transform: translateX(-50%) translateY(-3px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
         }
-        
-        /* Progress Bar */
+
         .progress-container {
             width: 100%;
             background: #e0e0e0;
@@ -153,7 +198,7 @@
             margin: 20px 0;
             display: none;
         }
-        
+
         .progress-bar {
             height: 8px;
             background: linear-gradient(45deg, #667eea, #764ba2);
@@ -161,27 +206,25 @@
             transition: width 0.3s;
         }
 
-        /* Alert Messages */
         .alert {
             padding: 15px;
             border-radius: 8px;
             margin: 20px 0;
             font-weight: 500;
         }
-        
+
         .alert-error {
             background: #ffebee;
             color: #c62828;
             border: 1px solid #ffcdd2;
         }
-        
+
         .alert-success {
             background: #e8f5e8;
             color: #2e7d32;
             border: 1px solid #c8e6c9;
         }
-        
-        /* Back Button */
+
         .back-btn {
             background: #6c757d;
             color: white;
@@ -192,67 +235,117 @@
             margin-bottom: 20px;
             font-size: 14px;
         }
-        
+
         .back-btn:hover {
             background: #5a6268;
         }
-        
-        /* Responsive */
-        @media (max-width: 600px) {
-            .second-page { padding: 20px; }
-            .download-buttons { flex-direction: column; align-items: center; }
-            .floating-download {
-                 /* Kosongkan agar tidak bentrok dengan centering */
+
+        /* Layout Responsif */
+        @media (max-width: 900px) {
+            body {
+                align-items: flex-start;
+            }
+            .page-wrapper {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto auto;
+                width: 100%;
+                padding: 15px;
+                gap: 15px;
+            }
+
+             .ad-slot-top {
+                grid-column: 1 / 2;
+                grid-row: 1 / 2;
+                min-height: 50px;
+            }
+
+            .container {
+                grid-column: 1 / 2;
+                grid-row: 2 / 3;
+            }
+
+            .ad-slot-left {
+                grid-column: 1 / 2;
+                grid-row: 3 / 4;
+                min-height: 100px;
+            }
+
+            .ad-slot-right {
+                grid-column: 1 / 2;
+                grid-row: 4 / 5;
+                min-height: 100px;
+            }
+
+            .ad-slot-bottom {
+                grid-column: 1 / 2;
+                grid-row: 5 / 6;
+                min-height: 50px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-         <div class="header">
-            <h1>🔗 Article Downloader</h1>
-            <p>Unduh artikel dari berbagai website dalam format DOCX, PDF, atau HTML</p>
+    <div class="page-wrapper">
+        <div class="ad-slot ad-slot-left">
+            Iklan Responsif Kiri
         </div>
-        
-        <div class="second-page" id="secondPage">
-            <button class="back-btn" onclick="backToMain()">← Kembali</button>
-            
-            <h2 style="margin-bottom: 20px; color: #333; text-align: center;">Preview Artikel</h2>
-            
-            <div class="preview-box" id="previewBox">
-                <div class="preview-title" id="previewTitle"></div>
-                <div class="preview-content" id="previewContent"></div>
+
+        <div class="ad-slot ad-slot-top">
+            Iklan Responsif Atas
+        </div>
+
+        <div class="container">
+            <div class="header">
+                <h1>🔗 Article Downloader</h1>
+                <p>Unduh artikel dari berbagai website dalam format DOCX, PDF, atau HTML</p>
             </div>
             
-            <div class="download-section">
-                <h3 style="margin-bottom: 20px; color: #333;">Pilih Format Download</h3>
-                <div class="download-buttons">
-                    <button class="download-btn" data-format="docx" onclick="selectFormat('docx')">
-                        📄 DOCX
-                    </button>
-                    <button class="download-btn" data-format="html" onclick="selectFormat('html')">
-                        🌐 HTML
-                    </button>
+            <div class="second-page" id="secondPage">
+                <button class="back-btn" onclick="backToMain()">← Kembali</button>
+                
+                <h2 style="margin-bottom: 20px; color: #333; text-align: center;">Preview Artikel</h2>
+                
+                <div class="preview-box" id="previewBox">
+                    <div class="preview-title" id="previewTitle"></div>
+                    <div class="preview-content" id="previewContent"></div>
                 </div>
                 
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar" id="progressBar"></div>
+                <div class="download-section">
+                    <h3 style="margin-bottom: 20px; color: #333;">Pilih Format Download</h3>
+                    <div class="download-buttons">
+                        <button class="download-btn" data-format="docx" onclick="selectFormat('docx')">
+                            📄 DOCX
+                        </button>
+                        <button class="download-btn" data-format="html" onclick="selectFormat('html')">
+                            🌐 HTML
+                        </button>
+                    </div>
+                    
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    
+                    <div id="downloadStatus"></div>
                 </div>
-                
-                <div id="downloadStatus"></div>
             </div>
+            
+            <button class="floating-download" id="floatingBtn" onclick="downloadArticle()">
+                📥 Download Artikel
+            </button>
         </div>
-        
-        <button class="floating-download" id="floatingBtn" onclick="downloadArticle()">
-            📥 Download Artikel
-        </button>
+
+        <div class="ad-slot ad-slot-bottom">
+            Iklan Responsif Bawah
+        </div>
+
+        <div class="ad-slot ad-slot-right">
+            Iklan Responsif Kanan
+        </div>
     </div>
 
     <script>
-        // Konfigurasi Backend URL
+        // --- TIDAK ADA PERUBAHAN PADA KODE JAVASCRIPT ---
         const BACKEND_URL = 'https://fc209f69-426f-43ea-8548-587771127dd5-00-2i55xck8onmpl.pike.replit.dev';
-
-        // Variabel global
         let currentArticle = null;
         let selectedFormat = null;
         let downloadTimer = null;
@@ -262,7 +355,7 @@
             
             if (!articleDataString) {
                 alert('Data artikel tidak ditemukan. Silakan kembali ke halaman utama.');
-                window.location.href = 'https://amsinaga.github.io/Ardown'; // <-- GANTI INI
+                window.location.href = 'https://amsinaga.github.io/Ardown';
                 return;
             }
             
@@ -277,7 +370,6 @@
         }
         
         function selectFormat(format) {
-            // MODIFIKASI 4: Buka iklan direct link di tab baru saat format dipilih
             window.open('https://impossibleentry.com/28Vpoi', '_blank');
 
             selectedFormat = format;
@@ -286,7 +378,6 @@
             startCountdown();
         }
 
-        // MODIFIKASI 3.b: Fungsi untuk membuat tulisan aneh
         function generateWeirdText(length) {
             let result = '';
             const characters = '¡™£¢∞§¶•ªº–≠œ∑´®†¥¨ˆøπ“‘åß∂ƒ©˙∆˚¬…æ«`~Ω≈ç√∫˜µ≤≥÷';
@@ -307,7 +398,6 @@
             if (downloadTimer) clearInterval(downloadTimer);
 
             downloadTimer = setInterval(() => {
-                // MODIFIKASI 3.b: Menambahkan tulisan aneh di samping countdown
                 floatingBtn.innerHTML = `${generateWeirdText(3)} ⏱️ Tunggu ${countdown} detik ${generateWeirdText(3)}`;
                 countdown--;
                 
@@ -316,7 +406,7 @@
                     floatingBtn.disabled = false;
                     floatingBtn.style.opacity = '1';
                     const formatText = selectedFormat.toUpperCase();
-                    floatingBtn.innerHTML = `📥 Download ${formatText}`; // Gunakan innerHTML agar emoji terbaca
+                    floatingBtn.innerHTML = `📥 Download ${formatText}`;
                 }
             }, 1000);
         }
@@ -376,7 +466,7 @@
         
         function backToMain() {
             sessionStorage.removeItem('currentArticle');
-            window.location.href = 'https://amsinaga.github.io/Ardown/index.html'; // <-- GANTI INI
+            window.location.href = 'https://amsinaga.github.io/Ardown/index.html';
         }
     </script>
 </body>
