@@ -24,11 +24,11 @@
 
         .page-wrapper {
             display: grid;
-            grid-template-columns: 300px 600px 300px; /* Lebar tetap untuk iklan samping dan tengah */
-            grid-template-rows: auto auto auto; /* Tinggi otomatis */
+            grid-template-columns: 300px 600px 300px;
+            grid-template-rows: auto auto auto;
             gap: 20px;
-            width: 1200px; /* Lebar total untuk desktop */
-            max-width: 100%; /* Responsif agar tidak melebihi layar */
+            width: 1200px;
+            max-width: 100%;
         }
 
         .ad-slot {
@@ -37,7 +37,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 250px; /* Sesuaikan tinggi iklan */
+            min-height: 250px;
             color: white;
             font-size: 1.2em;
             border-radius: 15px;
@@ -49,13 +49,13 @@
         .ad-slot-top {
             grid-column: 2 / 3;
             grid-row: 1 / 2;
-            min-height: 100px; /* Sesuaikan tinggi iklan atas */
+            min-height: 100px;
         }
 
         .ad-slot-bottom {
             grid-column: 2 / 3;
             grid-row: 3 / 4;
-            min-height: 100px; /* Sesuaikan tinggi iklan bawah */
+            min-height: 100px;
         }
 
         .ad-slot-left {
@@ -74,7 +74,7 @@
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            overflow: visible; /* Diubah agar floating button tidak terpotong */
+            overflow: hidden; /* Kembali ke hidden */
             position: relative;
         }
 
@@ -139,7 +139,7 @@
             gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 30px;
+            margin-bottom: 15px; /* Kurangi margin bawah */
         }
 
         .download-btn {
@@ -165,31 +165,36 @@
             color: white;
         }
 
-        .floating-download {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(45deg, #667eea, #764ba2);
+        /* MODIFIKASI 1: Hapus style untuk .floating-download */
+        
+        /* MODIFIKASI 2: Buat style baru untuk tombol download akhir */
+        .final-download-btn {
+            background: linear-gradient(45deg, #28a745, #218838); /* Warna hijau sukses */
             color: white;
             border: none;
-            padding: 15px 25px;
-            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 16px;
+            transition: transform 0.3s;
             font-weight: 600;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-            z-index: 1000;
-            transition: all 0.3s;
-            display: none;
-            white-space: nowrap;
+            display: none; /* Sembunyikan secara default */
+            margin-top: 20px;
+        }
+        
+        .final-download-btn:hover {
+            transform: translateY(-2px);
         }
 
-        .floating-download:hover {
-            transform: translateX(-50%) translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        /* MODIFIKASI 3: Buat style untuk text countdown */
+        #countdown-timer {
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #555;
+            display: none; /* Sembunyikan secara default */
         }
-
+        
         .progress-container {
             width: 100%;
             background: #e0e0e0;
@@ -240,7 +245,6 @@
             background: #5a6268;
         }
 
-        /* Layout Responsif */
         @media (max-width: 900px) {
             body {
                 align-items: flex-start;
@@ -253,7 +257,7 @@
                 gap: 15px;
             }
 
-             .ad-slot-top {
+            .ad-slot-top {
                 grid-column: 1 / 2;
                 grid-row: 1 / 2;
                 min-height: 50px;
@@ -287,12 +291,10 @@
 <body>
     <div class="page-wrapper">
         <div class="ad-slot ad-slot-left">
-            Iklan Responsif Kiri
-        </div>
+            </div>
 
         <div class="ad-slot ad-slot-top">
-            Iklan Responsif Atas
-        </div>
+            </div>
 
         <div class="container">
             <div class="header">
@@ -321,6 +323,11 @@
                         </button>
                     </div>
                     
+                    <div id="countdown-timer"></div>
+                    
+                    <button class="final-download-btn" id="finalDownloadBtn" onclick="downloadArticle()">
+                        </button>
+                    
                     <div class="progress-container" id="progressContainer">
                         <div class="progress-bar" id="progressBar"></div>
                     </div>
@@ -328,23 +335,17 @@
                     <div id="downloadStatus"></div>
                 </div>
             </div>
-            
-            <button class="floating-download" id="floatingBtn" onclick="downloadArticle()">
-                📥 Download Artikel
-            </button>
         </div>
 
         <div class="ad-slot ad-slot-bottom">
-            Iklan Responsif Bawah
-        </div>
+            </div>
 
         <div class="ad-slot ad-slot-right">
-            Iklan Responsif Kanan
-        </div>
+            </div>
     </div>
 
     <script>
-        // --- TIDAK ADA PERUBAHAN PADA KODE JAVASCRIPT ---
+        // --- MODIFIKASI 5: Logika JavaScript diubah total untuk alur baru ---
         const BACKEND_URL = 'https://fc209f69-426f-43ea-8548-587771127dd5-00-2i55xck8onmpl.pike.replit.dev';
         let currentArticle = null;
         let selectedFormat = null;
@@ -375,6 +376,10 @@
             selectedFormat = format;
             document.querySelectorAll('.download-btn').forEach(btn => btn.classList.remove('selected'));
             document.querySelector(`[data-format="${format}"]`).classList.add('selected');
+            
+            // Nonaktifkan tombol format agar tidak diklik berulang kali
+            document.querySelectorAll('.download-btn').forEach(btn => btn.disabled = true);
+
             startCountdown();
         }
 
@@ -389,24 +394,28 @@
 
         function startCountdown() {
             let countdown = 15;
-            const floatingBtn = document.getElementById('floatingBtn');
+            const countdownTimerEl = document.getElementById('countdown-timer');
+            const finalDownloadBtn = document.getElementById('finalDownloadBtn');
             
-            floatingBtn.style.display = 'block';
-            floatingBtn.disabled = true;
-            floatingBtn.style.opacity = '0.6';
+            // Tampilkan elemen timer, sembunyikan tombol download
+            countdownTimerEl.style.display = 'block';
+            finalDownloadBtn.style.display = 'none';
             
             if (downloadTimer) clearInterval(downloadTimer);
 
             downloadTimer = setInterval(() => {
-                floatingBtn.innerHTML = `${generateWeirdText(3)} ⏱️ Tunggu ${countdown} detik ${generateWeirdText(3)}`;
+                countdownTimerEl.innerHTML = `${generateWeirdText(3)} ⏱️ Silakan tunggu ${countdown} detik ${generateWeirdText(3)}`;
                 countdown--;
                 
                 if (countdown < 0) {
                     clearInterval(downloadTimer);
-                    floatingBtn.disabled = false;
-                    floatingBtn.style.opacity = '1';
+                    
+                    // Sembunyikan timer, tampilkan tombol download akhir
+                    countdownTimerEl.style.display = 'none';
+                    finalDownloadBtn.style.display = 'block';
+                    
                     const formatText = selectedFormat.toUpperCase();
-                    floatingBtn.innerHTML = `📥 Download ${formatText}`;
+                    finalDownloadBtn.innerHTML = `✅ Unduh File ${formatText} Sekarang`;
                 }
             }, 1000);
         }
@@ -417,19 +426,22 @@
                 return;
             }
             
+            const finalDownloadBtn = document.getElementById('finalDownloadBtn');
+            finalDownloadBtn.disabled = true;
+            finalDownloadBtn.textContent = 'Memproses...';
+
             const progressContainer = document.getElementById('progressContainer');
             const progressBar = document.getElementById('progressBar');
             const statusDiv = document.getElementById('downloadStatus');
             
             progressContainer.style.display = 'block';
-            statusDiv.innerHTML = '<div style="text-align: center; color: #666;">Memproses download...</div>';
             
             let progress = 0;
             const progressInterval = setInterval(() => {
                 progress += 33.33;
                 progressBar.style.width = `${progress}%`;
                 if (progress >= 100) clearInterval(progressInterval);
-            }, 1000);
+            }, 500);
             
             try {
                 const response = await fetch(`${BACKEND_URL}/api/download-article`, {
@@ -454,6 +466,7 @@
                     window.URL.revokeObjectURL(url);
                     
                     statusDiv.innerHTML = '<div class="alert alert-success">✅ File berhasil didownload!</div>';
+                    finalDownloadBtn.style.display = 'none'; // Sembunyikan tombol setelah sukses
                 } else {
                     throw new Error('Gagal mendownload file');
                 }
@@ -461,6 +474,8 @@
             } catch (error) {
                 console.error('Error:', error);
                 statusDiv.innerHTML = `<div class="alert alert-error">❌ Gagal download: ${error.message}</div>`;
+                finalDownloadBtn.disabled = false;
+                finalDownloadBtn.textContent = `Gagal! Coba Unduh Lagi`;
             }
         }
         
