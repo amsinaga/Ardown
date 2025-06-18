@@ -74,7 +74,7 @@
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            overflow: hidden; /* Kembali ke hidden */
+            overflow: hidden;
             position: relative;
         }
 
@@ -139,7 +139,7 @@
             gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 15px; /* Kurangi margin bawah */
+            margin-bottom: 15px;
         }
 
         .download-btn {
@@ -165,11 +165,8 @@
             color: white;
         }
 
-        /* MODIFIKASI 1: Hapus style untuk .floating-download */
-        
-        /* MODIFIKASI 2: Buat style baru untuk tombol download akhir */
         .final-download-btn {
-            background: linear-gradient(45deg, #28a745, #218838); /* Warna hijau sukses */
+            background: linear-gradient(45deg, #28a745, #218838);
             color: white;
             border: none;
             padding: 15px 40px;
@@ -178,23 +175,31 @@
             cursor: pointer;
             transition: transform 0.3s;
             font-weight: 600;
-            display: none; /* Sembunyikan secara default */
+            display: none;
             margin-top: 20px;
+            /* MODIFIKASI 1: Center the button */
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
         }
-        
+
         .final-download-btn:hover {
             transform: translateY(-2px);
         }
 
-        /* MODIFIKASI 3: Buat style untuk text countdown */
         #countdown-timer {
             margin-top: 20px;
-            font-size: 1.1em;
-            font-weight: 500;
+            font-size: 1.2em;
+            font-weight: bold;
             color: #555;
-            display: none; /* Sembunyikan secara default */
+            display: none;
+            /* MODIFIKASI 2: Add border and center text */
+            border: 2px dashed #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
         }
-        
+
         .progress-container {
             width: 100%;
             background: #e0e0e0;
@@ -291,27 +296,27 @@
 <body>
     <div class="page-wrapper">
         <div class="ad-slot ad-slot-left">
-            </div>
+        </div>
 
         <div class="ad-slot ad-slot-top">
-            </div>
+        </div>
 
         <div class="container">
             <div class="header">
                 <h1>🔗 Article Downloader</h1>
                 <p>Unduh artikel dari berbagai website dalam format DOCX, PDF, atau HTML</p>
             </div>
-            
+
             <div class="second-page" id="secondPage">
                 <button class="back-btn" onclick="backToMain()">← Kembali</button>
-                
+
                 <h2 style="margin-bottom: 20px; color: #333; text-align: center;">Preview Artikel</h2>
-                
+
                 <div class="preview-box" id="previewBox">
                     <div class="preview-title" id="previewTitle"></div>
                     <div class="preview-content" id="previewContent"></div>
                 </div>
-                
+
                 <div class="download-section">
                     <h3 style="margin-bottom: 20px; color: #333;">Pilih Format Download</h3>
                     <div class="download-buttons">
@@ -322,30 +327,29 @@
                             🌐 HTML
                         </button>
                     </div>
-                    
+
                     <div id="countdown-timer"></div>
-                    
+
                     <button class="final-download-btn" id="finalDownloadBtn" onclick="downloadArticle()">
-                        </button>
-                    
+                    </button>
+
                     <div class="progress-container" id="progressContainer">
                         <div class="progress-bar" id="progressBar"></div>
                     </div>
-                    
+
                     <div id="downloadStatus"></div>
                 </div>
             </div>
         </div>
 
         <div class="ad-slot ad-slot-bottom">
-            </div>
+        </div>
 
         <div class="ad-slot ad-slot-right">
-            </div>
+        </div>
     </div>
 
     <script>
-        // --- MODIFIKASI 5: Logika JavaScript diubah total untuk alur baru ---
         const BACKEND_URL = 'https://fc209f69-426f-43ea-8548-587771127dd5-00-2i55xck8onmpl.pike.replit.dev';
         let currentArticle = null;
         let selectedFormat = null;
@@ -353,13 +357,13 @@
 
         window.addEventListener('load', function() {
             const articleDataString = sessionStorage.getItem('currentArticle');
-            
+
             if (!articleDataString) {
                 alert('Data artikel tidak ditemukan. Silakan kembali ke halaman utama.');
                 window.location.href = 'https://amsinaga.github.io/Ardown';
                 return;
             }
-            
+
             currentArticle = JSON.parse(articleDataString);
             displayArticle();
         });
@@ -369,63 +373,51 @@
             document.getElementById('previewTitle').textContent = currentArticle.title || 'Judul tidak ditemukan';
             document.getElementById('previewContent').textContent = currentArticle.content || 'Konten tidak ditemukan';
         }
-        
+
         function selectFormat(format) {
             window.open('https://impossibleentry.com/28Vpoi', '_blank');
 
             selectedFormat = format;
             document.querySelectorAll('.download-btn').forEach(btn => btn.classList.remove('selected'));
-            document.querySelector(`[data-format="${format}"]`).classList.add('selected');
-            
-            // Nonaktifkan tombol format agar tidak diklik berulang kali
+            document.querySelector(`button.download-btn:nth-child(${format === 'docx' ? 1 : 2})`).classList.add('selected');
             document.querySelectorAll('.download-btn').forEach(btn => btn.disabled = true);
 
             startCountdown();
-        }
-
-        function generateWeirdText(length) {
-            let result = '';
-            const characters = '¡™£¢∞§¶•ªº–≠œ∑´®†¥¨ˆøπ“‘åß∂ƒ©˙∆˚¬…æ«`~Ω≈ç√∫˜µ≤≥÷';
-            for (let i = 0; i < length; i++) {
-                result += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            return result;
         }
 
         function startCountdown() {
             let countdown = 15;
             const countdownTimerEl = document.getElementById('countdown-timer');
             const finalDownloadBtn = document.getElementById('finalDownloadBtn');
-            
-            // Tampilkan elemen timer, sembunyikan tombol download
+
             countdownTimerEl.style.display = 'block';
             finalDownloadBtn.style.display = 'none';
-            
+            countdownTimerEl.innerHTML = `Tunggu: ${countdown}`;
+
             if (downloadTimer) clearInterval(downloadTimer);
 
             downloadTimer = setInterval(() => {
-                countdownTimerEl.innerHTML = `${generateWeirdText(3)} ⏱️ Silakan tunggu ${countdown} detik ${generateWeirdText(3)}`;
                 countdown--;
-                
+                countdownTimerEl.innerHTML = `Tunggu: ${countdown}`;
+
                 if (countdown < 0) {
                     clearInterval(downloadTimer);
-                    
-                    // Sembunyikan timer, tampilkan tombol download akhir
+
                     countdownTimerEl.style.display = 'none';
                     finalDownloadBtn.style.display = 'block';
-                    
+
                     const formatText = selectedFormat.toUpperCase();
                     finalDownloadBtn.innerHTML = `✅ Unduh File ${formatText} Sekarang`;
                 }
             }, 1000);
         }
-        
+
         async function downloadArticle() {
             if (!currentArticle || !selectedFormat) {
                 alert('Silakan pilih format download terlebih dahulu!');
                 return;
             }
-            
+
             const finalDownloadBtn = document.getElementById('finalDownloadBtn');
             finalDownloadBtn.disabled = true;
             finalDownloadBtn.textContent = 'Memproses...';
@@ -433,16 +425,16 @@
             const progressContainer = document.getElementById('progressContainer');
             const progressBar = document.getElementById('progressBar');
             const statusDiv = document.getElementById('downloadStatus');
-            
+
             progressContainer.style.display = 'block';
-            
+
             let progress = 0;
             const progressInterval = setInterval(() => {
                 progress += 33.33;
                 progressBar.style.width = `${progress}%`;
                 if (progress >= 100) clearInterval(progressInterval);
             }, 500);
-            
+
             try {
                 const response = await fetch(`${BACKEND_URL}/api/download-article`, {
                     method: 'POST',
@@ -453,7 +445,7 @@
                         format: selectedFormat
                     })
                 });
-                
+
                 if (response.ok) {
                     const blob = await response.blob();
                     const url = window.URL.createObjectURL(blob);
@@ -464,13 +456,13 @@
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
-                    
+
                     statusDiv.innerHTML = '<div class="alert alert-success">✅ File berhasil didownload!</div>';
-                    finalDownloadBtn.style.display = 'none'; // Sembunyikan tombol setelah sukses
+                    finalDownloadBtn.style.display = 'none';
                 } else {
                     throw new Error('Gagal mendownload file');
                 }
-                
+
             } catch (error) {
                 console.error('Error:', error);
                 statusDiv.innerHTML = `<div class="alert alert-error">❌ Gagal download: ${error.message}</div>`;
@@ -478,7 +470,7 @@
                 finalDownloadBtn.textContent = `Gagal! Coba Unduh Lagi`;
             }
         }
-        
+
         function backToMain() {
             sessionStorage.removeItem('currentArticle');
             window.location.href = 'https://amsinaga.github.io/Ardown/index.html';
