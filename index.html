@@ -17,18 +17,17 @@
             color: #333;
         }
 
-        /* MODIFIKASI 1: Wrapper utama untuk tata letak Grid */
         .page-wrapper {
             display: grid;
-            grid-template-columns: 1fr auto 1fr; /* Kolom kiri/kanan fleksibel, tengah menyesuaikan konten */
-            grid-template-rows: auto auto 1fr; /* Baris atas/tengah menyesuaikan, bawah fleksibel */
+            grid-template-columns: 1fr auto 1fr; 
+            /* --- PERBAIKAN DI SINI --- */
+            grid-template-rows: 1fr auto 1fr; /* Distribusikan ruang sisa ke baris atas dan bawah */
             min-height: 100vh;
-            gap: 20px; /* Jarak antar elemen */
+            gap: 20px; 
             padding: 20px;
-            align-items: center; /* Menengahkan secara vertikal */
+            align-items: center; 
         }
 
-        /* MODIFIKASI 2: Penempatan slot iklan dan container pada Grid */
         .ad-slot {
             background: rgba(0, 0, 0, 0.1);
             border: 2px dashed rgba(255, 255, 255, 0.5);
@@ -41,37 +40,42 @@
             border-radius: 15px;
             text-align: center;
             padding: 10px;
+            overflow: hidden; /* Mencegah konten iklan keluar dari kotak */
         }
 
         .ad-slot-top { 
-            grid-column: 2 / 3; /* Kolom tengah */
-            grid-row: 1 / 2; /* Baris atas */
+            grid-column: 2 / 3; 
+            grid-row: 2 / 3; /* Pindahkan ke baris tengah agar dekat dengan container */
+            align-self: end; /* Posisikan di bagian bawah sel gridnya */
+            margin-bottom: -10px; /* Sedikit tumpang tindih untuk estetika */
         }
         .ad-slot-bottom { 
-            grid-column: 2 / 3; /* Kolom tengah */
-            grid-row: 3 / 4; /* Baris bawah */
+            grid-column: 2 / 3; 
+            grid-row: 2 / 3; /* Pindahkan juga ke baris tengah */
+            align-self: start; /* Posisikan di bagian atas sel gridnya */
+            margin-top: -10px;
         }
         .ad-slot-left { 
-            grid-column: 1 / 2; /* Kolom kiri */
-            grid-row: 1 / 4; /* Membentang dari baris 1 sampai 4 */
+            grid-column: 1 / 2;
+            grid-row: 1 / 4; /* Biarkan membentang penuh */
             min-height: 400px;
         }
         .ad-slot-right { 
-            grid-column: 3 / 4; /* Kolom kanan */
-            grid-row: 1 / 4; /* Membentang dari baris 1 sampai 4 */
+            grid-column: 3 / 4; 
+            grid-row: 1 / 4; /* Biarkan membentang penuh */
             min-height: 400px;
         }
 
         .container {
-            grid-column: 2 / 3; /* Kolom tengah */
-            grid-row: 2 / 3; /* Baris tengah */
-            max-width: 600px; /* Sedikit diperkecil agar pas */
+            grid-column: 2 / 3; 
+            grid-row: 2 / 3; /* Tetap di baris tengah */
+            max-width: 600px; 
             width: 100%;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             overflow: hidden;
-            /* Hapus margin auto karena sudah diatur oleh Grid */
+            z-index: 10; /* Pastikan container di atas iklan atas/bawah */
         }
         
         .header {
@@ -178,20 +182,26 @@
             border: 1px solid #ffcdd2;
         }
         
-        /* MODIFIKASI 3: Pengaturan layout responsif */
         @media (max-width: 900px) {
             .page-wrapper {
-                grid-template-columns: 1fr; /* Hanya 1 kolom */
-                grid-template-rows: auto auto auto auto auto; /* 5 baris untuk semua elemen */
-                align-items: stretch; /* Hapus penengahan vertikal */
+                grid-template-columns: 1fr; 
+                grid-template-rows: auto auto auto auto auto; 
+                align-items: stretch;
             }
 
-            /* Atur ulang semua elemen ke kolom pertama dan barisnya masing-masing */
-            .ad-slot-top { grid-area: 1 / 1 / 2 / 2; }
-            .container { grid-area: 2 / 1 / 3 / 2; margin: 0 auto; } /* Tengahkan lagi */
-            .ad-slot-left { grid-area: 3 / 1 / 4 / 2; min-height: 100px; }
-            .ad-slot-right { grid-area: 4 / 1 / 5 / 2; min-height: 100px; }
-            .ad-slot-bottom { grid-area: 5 / 1 / 6 / 2; }
+            .ad-slot-top, .ad-slot-bottom, .container, .ad-slot-left, .ad-slot-right {
+                grid-column: 1 / 2; /* Semua elemen di kolom pertama */
+                margin: 0 0 20px 0; /* Beri jarak bawah */
+            }
+
+            .container { 
+                grid-row: 2 / 3;
+                margin: 0 auto 20px auto; /* Tengahkan lagi */
+            }
+            .ad-slot-top { grid-row: 1 / 2; }
+            .ad-slot-left { grid-row: 3 / 4; min-height: 100px; }
+            .ad-slot-right { grid-row: 4 / 5; min-height: 100px; }
+            .ad-slot-bottom { grid-row: 5 / 6; }
         }
     </style>
 </head>
@@ -199,20 +209,20 @@
     <div class="page-wrapper">
         <div class="ad-slot ad-slot-left">
             <script type="text/javascript">
-	atOptions = {
-		'key' : '60f3a64928189ee13c0241d72cd80889',
-		'format' : 'iframe',
-		'height' : 250,
-		'width' : 300,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/60f3a64928189ee13c0241d72cd80889/invoke.js"></script>
+                atOptions = {
+                    'key' : '60f3a64928189ee13c0241d72cd80889',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/60f3a64928189ee13c0241d72cd80889/invoke.js"></script>
         </div>
 
         <div class="ad-slot ad-slot-top">
             <script async="async" data-cfasync="false" src="//pl26895547.profitableratecpm.com/4d74860102a5307b25984c6c45b384bb/invoke.js"></script>
-<div id="container-4d74860102a5307b25984c6c45b384bb"></div>
+            <div id="container-4d74860102a5307b25984c6c45b384bb"></div>
         </div>
 
         <div class="container">
@@ -246,29 +256,27 @@
 
         <div class="ad-slot ad-slot-bottom">
              <script async="async" data-cfasync="false" src="//pl26895547.profitableratecpm.com/4d74860102a5307b25984c6c45b384bb/invoke.js"></script>
-<div id="container-4d74860102a5307b25984c6c45b384bb"></div>
+             <div id="container-4d74860102a5307b25984c6c45b384bb"></div>
         </div>
 
         <div class="ad-slot ad-slot-right">
-<script type="text/javascript">
-	atOptions = {
-		'key' : '60f3a64928189ee13c0241d72cd80889',
-		'format' : 'iframe',
-		'height' : 250,
-		'width' : 300,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/60f3a64928189ee13c0241d72cd80889/invoke.js"></script>
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '60f3a64928189ee13c0241d72cd80889',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/60f3a64928189ee13c0241d72cd80889/invoke.js"></script>
         </div>
     </div>
 
     <script>
         // --- TIDAK ADA PERUBAHAN PADA KODE JAVASCRIPT ---
-        // Konfigurasi Backend URL
         const BACKEND_URL = 'https://fc209f69-426f-43ea-8548-587771127dd5-00-2i55xck8onmpl.pike.replit.dev';
 
-        // Fungsi untuk menampilkan alert
         function showAlert(message, type = 'error') {
             const alertContainer = document.getElementById('alertContainer');
             const alert = document.createElement('div');
@@ -282,7 +290,6 @@
             }, 5000);
         }
         
-        // Fungsi untuk ekstrak artikel
         async function extractArticle() {
             const urlInput = document.getElementById('urlInput');
             const url = urlInput.value.trim();
@@ -314,13 +321,8 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    // 1. Simpan data artikel ke sessionStorage (ini tetap penting)
                     sessionStorage.setItem('currentArticle', JSON.stringify(result.data));
-                    
-                    // 2. Buka iklan direct link di tab baru
                     window.open('https://impossibleentry.com/28Vpoi', '_blank');
-                    
-                    // 3. Arahkan tab saat ini ke halaman kedua
                     window.location.href = 'https://amsinaga.github.io/Ardown/hadu.html';
 
                 } else {
@@ -330,7 +332,6 @@
             } catch (error) {
                 console.error('Error:', error);
                 showAlert(`Gagal mengekstrak artikel: ${error.message}`);
-                // Reset tombol jika gagal di tengah jalan
                 document.getElementById('extractBtn').disabled = false;
                 document.getElementById('extractBtn').textContent = '🚀 Ambil Artikel';
                 document.getElementById('mainLoading').style.display = 'none';
