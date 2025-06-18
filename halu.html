@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Downloader - Halaman Utama</title>
+    <style>
+        /* SEMUA KODE CSS DARI FILE ASLI DITEMPATKAN DI SINI */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        /* Halaman Utama */
+        .main-page {
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        .url-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .extract-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            font-weight: 600;
+        }
+        
+        .extract-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .extract-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+        }
+        
+        /* Alert Messages */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2em; }
+            .main-page { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 Article Downloader</h1>
+            <p>Unduh artikel dari berbagai website dalam format DOCX, PDF, atau HTML</p>
+        </div>
+        
+        <div class="main-page" id="mainPage">
+            <div class="input-section">
+                <h2 style="margin-bottom: 20px; color: #333;">Masukkan Link Artikel</h2>
+                <input type="url" 
+                       class="url-input" 
+                       id="urlInput" 
+                       placeholder="https://contoh.com/artikel-menarik"
+                       required>
+                <br>
+                <button class="extract-btn" id="extractBtn" onclick="extractArticle()">
+                    🚀 Ambil Artikel
+                </button>
+            </div>
+            
+            <div class="loading" id="mainLoading">
+                <div class="spinner"></div>
+                <div class="loading-text">Mengekstrak artikel... Mohon tunggu</div>
+            </div>
+            
+            <div id="alertContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Backend URL
+        const BACKEND_URL = 'https://fc209f69-426f-43ea-8548-587771127dd5-00-2i55xck8onmpl.pike.replit.dev';
+
+        // Fungsi untuk menampilkan alert
+        function showAlert(message, type = 'error') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = message;
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+        
+        // Fungsi untuk ekstrak artikel
+        async function extractArticle() {
+            const urlInput = document.getElementById('urlInput');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                showAlert('Silakan masukkan URL artikel!');
+                return;
+            }
+            
+            try {
+                new URL(url);
+            } catch (e) {
+                showAlert('Format URL tidak valid! Pastikan URL dimulai dengan http:// atau https://');
+                return;
+            }
+            
+            document.getElementById('extractBtn').disabled = true;
+            document.getElementById('extractBtn').textContent = 'Memproses...';
+            document.getElementById('mainLoading').style.display = 'block';
+            document.getElementById('alertContainer').innerHTML = '';
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/extract-article`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // --- MODIFIKASI DIMULAI DI SINI ---
+
+                    // 1. Simpan data artikel ke sessionStorage (ini tetap penting)
+                    sessionStorage.setItem('currentArticle', JSON.stringify(result.data));
+                    
+                    // 2. Buka iklan direct link di tab baru
+                    window.open('https://impossibleentry.com/28Vpoi', '_blank');
+                    
+                    // 3. Arahkan tab saat ini ke halaman kedua
+                    window.location.href = 'https://kioskarya.blogspot.com/p/preview.html?m=1';
+
+                    // --- MODIFIKASI SELESAI ---
+                    
+                } else {
+                    throw new Error(result.error || 'Gagal mengekstrak artikel');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert(`Gagal mengekstrak artikel: ${error.message}`);
+                // Reset tombol jika gagal di tengah jalan
+                document.getElementById('extractBtn').disabled = false;
+                document.getElementById('extractBtn').textContent = '🚀 Ambil Artikel';
+                document.getElementById('mainLoading').style.display = 'none';
+            }
+            // 'finally' block tidak lagi dibutuhkan di sini karena kita langsung pindah halaman
+        }
+
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                extractArticle();
+            }
+        });
+    </script>
+</body>
+</html>
