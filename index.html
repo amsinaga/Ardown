@@ -5,205 +5,225 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Article Downloader - Halaman Utama</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-        }
+       * {
+           margin: 0;
+           padding: 0;
+           box-sizing: border-box;
+       }
 
-        .page-wrapper {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr; 
-            /* --- PERBAIKAN DI SINI --- */
-            grid-template-rows: 1fr auto 1fr; /* Distribusikan ruang sisa ke baris atas dan bawah */
-            min-height: 100vh;
-            gap: 20px; 
-            padding: 20px;
-            align-items: center; 
-        }
+       body {
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+           color: #333;
+           min-height: 100vh;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           padding: 20px;
+       }
 
-        .ad-slot {
-            background: rgba(0, 0, 0, 0.1);
-            border: 2px dashed rgba(255, 255, 255, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100px;
-            color: white;
-            font-size: 1.2em;
-            border-radius: 15px;
-            text-align: center;
-            padding: 10px;
-            overflow: hidden; /* Mencegah konten iklan keluar dari kotak */
-        }
+       .page-wrapper {
+           display: grid;
+           grid-template-columns: 300px 600px 300px; /* Lebar tetap untuk iklan samping dan tengah */
+           grid-template-rows: auto auto auto; /* Tinggi otomatis */
+           gap: 20px;
+           width: 1200px; /* Lebar total untuk desktop */
+           max-width: 100%; /* Responsif agar tidak melebihi layar */
+       }
 
-        .ad-slot-top { 
-            grid-column: 2 / 3; 
-            grid-row: 2 / 3; /* Pindahkan ke baris tengah agar dekat dengan container */
-            align-self: end; /* Posisikan di bagian bawah sel gridnya */
-            margin-bottom: -10px; /* Sedikit tumpang tindih untuk estetika */
-        }
-        .ad-slot-bottom { 
-            grid-column: 2 / 3; 
-            grid-row: 2 / 3; /* Pindahkan juga ke baris tengah */
-            align-self: start; /* Posisikan di bagian atas sel gridnya */
-            margin-top: -10px;
-        }
-        .ad-slot-left { 
-            grid-column: 1 / 2;
-            grid-row: 1 / 4; /* Biarkan membentang penuh */
-            min-height: 400px;
-        }
-        .ad-slot-right { 
-            grid-column: 3 / 4; 
-            grid-row: 1 / 4; /* Biarkan membentang penuh */
-            min-height: 400px;
-        }
+       .ad-slot {
+           background: rgba(0, 0, 0, 0.1);
+           border: 2px dashed rgba(255, 255, 255, 0.5);
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           min-height: 250px; /* Sesuaikan tinggi iklan */
+           color: white;
+           font-size: 1.2em;
+           border-radius: 15px;
+           text-align: center;
+           padding: 10px;
+           overflow: hidden;
+       }
 
-        .container {
-            grid-column: 2 / 3; 
-            grid-row: 2 / 3; /* Tetap di baris tengah */
-            max-width: 600px; 
-            width: 100%;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-            z-index: 10; /* Pastikan container di atas iklan atas/bawah */
-        }
-        
-        .header {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            text-align: center;
-            padding: 30px 20px;
-        }
-        
-        .header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-        
-        .header p {
-            font-size: 1em;
-            opacity: 0.9;
-        }
-        
-        .main-page {
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .input-section h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-        
-        .url-input {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            margin-bottom: 20px;
-            transition: border-color 0.3s;
-        }
-        
-        .url-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .extract-btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.3s;
-            font-weight: 600;
-        }
-        
-        .extract-btn:hover {
-            transform: translateY(-2px);
-        }
-        
-        .extract-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .loading {
-            display: none;
-            margin: 20px 0;
-        }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            text-align: center;
-            margin-top: 10px;
-            color: #666;
-        }
-        
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            font-weight: 500;
-        }
-        
-        .alert-error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-        }
-        
-        @media (max-width: 900px) {
-            .page-wrapper {
-                grid-template-columns: 1fr; 
-                grid-template-rows: auto auto auto auto auto; 
-                align-items: stretch;
-            }
+       .ad-slot-top {
+           grid-column: 2 / 3;
+           grid-row: 1 / 2;
+           min-height: 100px; /* Sesuaikan tinggi iklan atas */
+       }
 
-            .ad-slot-top, .ad-slot-bottom, .container, .ad-slot-left, .ad-slot-right {
-                grid-column: 1 / 2; /* Semua elemen di kolom pertama */
-                margin: 0 0 20px 0; /* Beri jarak bawah */
-            }
+       .ad-slot-bottom {
+           grid-column: 2 / 3;
+           grid-row: 3 / 4;
+           min-height: 100px; /* Sesuaikan tinggi iklan bawah */
+       }
 
-            .container { 
-                grid-row: 2 / 3;
-                margin: 0 auto 20px auto; /* Tengahkan lagi */
-            }
-            .ad-slot-top { grid-row: 1 / 2; }
-            .ad-slot-left { grid-row: 3 / 4; min-height: 100px; }
-            .ad-slot-right { grid-row: 4 / 5; min-height: 100px; }
-            .ad-slot-bottom { grid-row: 5 / 6; }
-        }
-    </style>
+       .ad-slot-left {
+           grid-column: 1 / 2;
+           grid-row: 1 / 4;
+       }
+
+       .ad-slot-right {
+           grid-column: 3 / 4;
+           grid-row: 1 / 4;
+       }
+
+       .container {
+           grid-column: 2 / 3;
+           grid-row: 2 / 3;
+           background: white;
+           border-radius: 20px;
+           box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+           overflow: hidden;
+       }
+
+       .header {
+           background: linear-gradient(45deg, #667eea, #764ba2);
+           color: white;
+           text-align: center;
+           padding: 30px 20px;
+       }
+
+       .header h1 {
+           font-size: 2em;
+           margin-bottom: 10px;
+           font-weight: 700;
+       }
+
+       .header p {
+           font-size: 1em;
+           opacity: 0.9;
+       }
+
+       .main-page {
+           padding: 30px;
+           text-align: center;
+       }
+
+       .input-section h2 {
+           margin-bottom: 20px;
+           color: #333;
+       }
+
+       .url-input {
+           width: 100%;
+           padding: 15px 20px;
+           border: 2px solid #e0e0e0;
+           border-radius: 10px;
+           font-size: 16px;
+           margin-bottom: 20px;
+           transition: border-color 0.3s;
+       }
+
+       .url-input:focus {
+           outline: none;
+           border-color: #667eea;
+       }
+
+       .extract-btn {
+           background: linear-gradient(45deg, #667eea, #764ba2);
+           color: white;
+           border: none;
+           padding: 15px 40px;
+           font-size: 18px;
+           border-radius: 10px;
+           cursor: pointer;
+           transition: transform 0.3s;
+           font-weight: 600;
+       }
+
+       .extract-btn:hover {
+           transform: translateY(-2px);
+       }
+
+       .extract-btn:disabled {
+           opacity: 0.6;
+           cursor: not-allowed;
+           transform: none;
+       }
+
+       .loading {
+           display: none;
+           margin: 20px 0;
+       }
+
+       .spinner {
+           border: 4px solid #f3f3f3;
+           border-top: 4px solid #667eea;
+           border-radius: 50%;
+           width: 40px;
+           height: 40px;
+           animation: spin 1s linear infinite;
+           margin: 0 auto;
+       }
+
+       @keyframes spin {
+           0% { transform: rotate(0deg); }
+           100% { transform: rotate(360deg); }
+       }
+
+       .loading-text {
+           text-align: center;
+           margin-top: 10px;
+           color: #666;
+       }
+
+       .alert {
+           padding: 15px;
+           border-radius: 8px;
+           margin: 20px 0;
+           font-weight: 500;
+       }
+
+       .alert-error {
+           background: #ffebee;
+           color: #c62828;
+           border: 1px solid #ffcdd2;
+       }
+
+       /* Layout Responsif */
+       @media (max-width: 900px) {
+           body {
+               align-items: flex-start; /* Atur ke atas saat di mobile */
+           }
+           .page-wrapper {
+               grid-template-columns: 1fr; /* Satu kolom */
+               grid-template-rows: auto auto auto auto auto; /* Semua elemen bertumpuk */
+               width: 100%;
+               padding: 15px;
+               gap: 15px;
+           }
+
+           .ad-slot-top {
+               grid-column: 1 / 2;
+               grid-row: 1 / 2;
+               min-height: 50px; /* Sesuaikan tinggi iklan atas mobile */
+           }
+
+           .container {
+               grid-column: 1 / 2;
+               grid-row: 2 / 3;
+           }
+
+           .ad-slot-left {
+               grid-column: 1 / 2;
+               grid-row: 3 / 4;
+               min-height: 100px; /* Sesuaikan tinggi iklan samping mobile */
+           }
+
+           .ad-slot-right {
+               grid-column: 1 / 2;
+               grid-row: 4 / 5;
+               min-height: 100px; /* Sesuaikan tinggi iklan samping mobile */
+           }
+
+           .ad-slot-bottom {
+               grid-column: 1 / 2;
+               grid-row: 5 / 6;
+               min-height: 50px; /* Sesuaikan tinggi iklan bawah mobile */
+           }
+       }
+   </style>
 </head>
 <body>
     <div class="page-wrapper">
