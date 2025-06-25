@@ -1,504 +1,234 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Article Downloader - Pratinjau & Unduh</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .page-wrapper {
-            display: grid;
-            grid-template-columns: 300px 600px 300px;
-            grid-template-rows: auto auto auto;
-            gap: 20px;
-            width: 1200px;
-            max-width: 100%;
-        }
-
-        .ad-slot {
-            background: rgba(0, 0, 0, 0.1);
-            border: 2px dashed rgba(255, 255, 255, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 250px;
-            color: white;
-            font-size: 1.2em;
-            border-radius: 15px;
-            text-align: center;
-            padding: 10px;
-            overflow: hidden;
-        }
-
-        .ad-slot-top {
-            grid-column: 2 / 3;
-            grid-row: 1 / 2;
-            min-height: 100px;
-        }
-
-        .ad-slot-bottom {
-            grid-column: 2 / 3;
-            grid-row: 3 / 4;
-            min-height: 100px;
-        }
-
-        .ad-slot-left {
-            grid-column: 1 / 2;
-            grid-row: 1 / 4;
-        }
-
-        .ad-slot-right {
-            grid-column: 3 / 4;
-            grid-row: 1 / 4;
-        }
-
-        .container {
-            grid-column: 2 / 3;
-            grid-row: 2 / 3;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .header {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .second-page {
-            padding: 40px;
-        }
-
-        .preview-box {
-            background: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 30px;
-            margin-bottom: 30px;
-            max-height: 400px;
-            overflow-y: auto;
-            position: relative;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-
-        .preview-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        .preview-content {
-            line-height: 1.8;
-            color: #555;
-            text-align: justify;
-        }
-
-        .download-section {
-            text-align: center;
-        }
-
-        .download-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .download-btn {
-            background: white;
-            border: 2px solid #667eea;
-            color: #667eea;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-            min-width: 120px;
-        }
-
-        .download-btn:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .download-btn.selected {
-            background: #667eea;
-            color: white;
-        }
-
-        .final-download-btn {
-            background: linear-gradient(45deg, #28a745, #218838);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.3s;
-            font-weight: 600;
-            display: none;
-            margin-top: 20px;
-            /* MODIFIKASI 1: Center the button */
-            margin-left: auto;
-            margin-right: auto;
-            display: block;
-        }
-
-        .final-download-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        #countdown-timer {
-            margin-top: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #555;
-            display: none;
-            /* MODIFIKASI 2: Add border and center text */
-            border: 2px dashed #ccc;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .progress-container {
-            width: 100%;
-            background: #e0e0e0;
-            border-radius: 20px;
-            overflow: hidden;
-            margin: 20px 0;
-            display: none;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            font-weight: 500;
-        }
-
-        .alert-error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-        }
-
-        .alert-success {
-            background: #e8f5e8;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-
-        .back-btn {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .back-btn:hover {
-            background: #5a6268;
-        }
-
-        @media (max-width: 900px) {
-            body {
-                align-items: flex-start;
-            }
-            .page-wrapper {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto auto auto auto;
-                width: 100%;
-                padding: 15px;
-                gap: 15px;
-            }
-
-            .ad-slot-top {
-                grid-column: 1 / 2;
-                grid-row: 1 / 2;
-                min-height: 50px;
-            }
-
-            .container {
-                grid-column: 1 / 2;
-                grid-row: 2 / 3;
-            }
-
-            .ad-slot-left {
-                grid-column: 1 / 2;
-                grid-row: 3 / 4;
-                min-height: 100px;
-            }
-
-            .ad-slot-right {
-                grid-column: 1 / 2;
-                grid-row: 4 / 5;
-                min-height: 100px;
-            }
-
-            .ad-slot-bottom {
-                grid-column: 1 / 2;
-                grid-row: 5 / 6;
-                min-height: 50px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Preview Artikel - ARDOX CLOUD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+      color: #111827;
+      padding:20px;
+    }
+    .container {
+      max-width:800px; margin:auto;
+      background:white; border-radius:20px;
+      box-shadow:0 20px 40px rgba(0,0,0,0.05);
+      overflow:hidden;
+    }
+    .header {
+      background:#2563eb; color:white;
+      text-align:center; padding:40px 20px;
+    }
+    .header h1 { font-size:2.2rem; font-weight:800; }
+    .header p { font-size:1rem; opacity:.9; }
+    .second-page { padding:40px 20px; }
+    .preview-box {
+      background:#f1f5f9; border:1px solid #e2e8f0;
+      border-radius:10px; padding:30px;
+      margin-bottom:30px; max-height:400px;
+      overflow-y:auto; user-select:none;
+    }
+    .preview-title {
+      font-size:24px; font-weight:bold;
+      color:#111827; margin-bottom:20px;
+      border-bottom:2px solid #2563eb;
+      padding-bottom:10px;
+    }
+    .preview-content {
+      line-height:1.8; color:#374151;
+      text-align:justify;
+    }
+    .download-section { text-align:center; }
+    .download-buttons {
+      display:flex; gap:15px;
+      justify-content:center; flex-wrap:wrap;
+      margin-bottom:15px;
+    }
+    .download-btn {
+      background:white; border:2px solid #2563eb;
+      color:#2563eb; padding:12px 25px;
+      border-radius:8px; cursor:pointer;
+      font-size:16px; font-weight:600;
+      transition:all .3s; min-width:120px;
+    }
+    .download-btn:hover, .download-btn.selected {
+      background:#2563eb; color:white;
+    }
+    #finalDownloadBtn {
+      display:none;
+      background: linear-gradient(to right, #3b82f6, #2563eb);
+      color:white; border:none;
+      padding:12px 25px; border-radius:8px;
+      font-size:15px; font-weight:600;
+      cursor:pointer; margin-top:20px;
+      box-shadow: 0 4px 10px rgba(37,99,235,0.2);
+      transition: all 0.3s ease;
+    }
+    #finalDownloadBtn:hover {
+      background: linear-gradient(to right, #2563eb, #1d4ed8);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(37,99,235,0.35);
+    }
+    #finalDownloadBtn[disabled] {
+      opacity: 0.6; cursor: wait;
+      background: #93c5fd;
+      box-shadow: none;
+      transform: none;
+    }
+    .progress-container {
+      width:100%; background:#e5e7eb;
+      border-radius:20px; overflow:hidden;
+      margin:20px 0; display:none;
+    }
+    .progress-bar {
+      height:8px; background:#2563eb; width:0;
+      transition:width .3s;
+    }
+    .alert {
+      padding:15px; border-radius:8px;
+      margin:20px 0; font-weight:500;
+    }
+    .alert-error {
+      background:#fee2e2; color:#b91c1c;
+      border:1px solid #fecaca;
+    }
+    .alert-success {
+      background:#d1fae5; color:#047857;
+      border:1px solid #a7f3d0;
+    }
+    .back-btn {
+      background:#6b7280; color:white;
+      border:none; padding:10px 20px;
+      border-radius:5px; cursor:pointer;
+      margin-bottom:20px; font-size:14px;
+    }
+    .back-btn:hover { background:#4b5563; }
+    @media (max-width:600px){
+      .second-page { padding:20px; }
+      .download-buttons {
+        flex-direction:column; align-items:center;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="page-wrapper">
-        <div class="ad-slot ad-slot-left">
-            <script async="async" data-cfasync="false" src="//pl26945755.profitableratecpm.com/19007de17b86045bc22afc84197c08de/invoke.js"></script>
-<div id="container-19007de17b86045bc22afc84197c08de"></div>
-        </div>
-
-        <div class="ad-slot ad-slot-top">
-            <script type="text/javascript">
-	atOptions = {
-		'key' : '8b8b6c88bf20ff59234105b08833c725',
-		'format' : 'iframe',
-		'height' : 90,
-		'width' : 728,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/8b8b6c88bf20ff59234105b08833c725/invoke.js"></script>
-        </div>
-
-        <div class="container">
-            <div class="header">
-                <h1>🔗 Article Downloader</h1>
-                <p>Unduh artikel dari berbagai website dalam format DOCX, PDF, atau HTML</p>
-            </div>
-
-            <div class="second-page" id="secondPage">
-                <button class="back-btn" onclick="backToMain()">← Kembali</button>
-
-                <h2 style="margin-bottom: 20px; color: #333; text-align: center;">Preview Artikel</h2>
-
-                <div class="preview-box" id="previewBox">
-                    <div class="preview-title" id="previewTitle"></div>
-                    <div class="preview-content" id="previewContent"></div>
-                </div>
-
-                <div class="download-section">
-                    <h3 style="margin-bottom: 20px; color: #333;">Pilih Format Download</h3>
-                    <div class="download-buttons">
-                        <button class="download-btn" data-format="docx" onclick="selectFormat('docx')">
-                            📄 DOCX
-                        </button>
-                        <button class="download-btn" data-format="html" onclick="selectFormat('html')">
-                            🌐 HTML
-                        </button>
-                    </div>
-
-                    <div id="countdown-timer"></div>
-
-                    <button class="final-download-btn" id="finalDownloadBtn" onclick="downloadArticle()">
-                    </button>
-
-                    <div class="progress-container" id="progressContainer">
-                        <div class="progress-bar" id="progressBar"></div>
-                    </div>
-
-                    <div id="downloadStatus"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="ad-slot ad-slot-bottom">
-            <script type="text/javascript">
-	atOptions = {
-		'key' : '8b8b6c88bf20ff59234105b08833c725',
-		'format' : 'iframe',
-		'height' : 90,
-		'width' : 728,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/8b8b6c88bf20ff59234105b08833c725/invoke.js"></script>
-        </div>
-
-        <div class="ad-slot ad-slot-right">
-            <script async="async" data-cfasync="false" src="//pl26945755.profitableratecpm.com/19007de17b86045bc22afc84197c08de/invoke.js"></script>
-<div id="container-19007de17b86045bc22afc84197c08de"></div>
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>📄 ARDOX CLOUD</h1>
+      <p>Pratinjau & Unduh Artikel Anda</p>
     </div>
+    <div class="second-page">
+      <button class="back-btn" onclick="backToMain()">← Kembali</button>
+      <h2 style="text-align:center; margin-bottom:20px; color:#111827;">
+        Preview Artikel
+      </h2>
+      <div class="preview-box">
+        <div class="preview-title" id="previewTitle"></div>
+        <div class="preview-content" id="previewContent"></div>
+      </div>
+      <div class="download-section">
+        <h3 style="margin-bottom:20px; color:#333;">Pilih Format Download</h3>
+        <div class="download-buttons">
+          <button class="download-btn" data-format="docx" onclick="selectFormat('docx')">📄 DOCX</button>
+          <button class="download-btn" data-format="html" onclick="selectFormat('html')">🌐 HTML</button>
+        </div>
+        <button id="finalDownloadBtn" onclick="downloadArticle()">📥 Download Artikel</button>
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div id="downloadStatus"></div>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        const BACKEND_URL = 'https://fc209f69-426f-43ea-8548-587771127dd5-00-2i55xck8onmpl.pike.replit.dev';
-        let currentArticle = null;
-        let selectedFormat = null;
-        let downloadTimer = null;
+  <script>
+    const BACKEND_URL = 'https://fc209f69-426f-43ea-8548-587771127dd5-00-2i55xck8onmpl.pike.replit.dev';
+    let currentArticle = null, selectedFormat = null;
 
-        window.addEventListener('load', function() {
-            const articleDataString = sessionStorage.getItem('currentArticle');
+    window.addEventListener('DOMContentLoaded', () => {
+      const data = sessionStorage.getItem('currentArticle');
+      if (!data) {
+        alert('Data artikel tidak ditemukan. Silakan kembali.');
+        return window.location.href = 'https://amsinaga.github.io/Ardown/index.html';
+      }
+      currentArticle = JSON.parse(data);
+      document.getElementById('previewTitle').textContent = currentArticle.title || '';
+      document.getElementById('previewContent').textContent = currentArticle.content || '';
+    });
 
-            if (!articleDataString) {
-                alert('Data artikel tidak ditemukan. Silakan kembali ke halaman utama.');
-                window.location.href = 'https://amsinaga.github.io/Ardown';
-                return;
-            }
+    function selectFormat(fmt) {
+      window.open('https://impossibleentry.com/28Vpoi', '_blank');
+      selectedFormat = fmt;
+      document.querySelectorAll('.download-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelector(`[data-format="${fmt}"]`).classList.add('selected');
+      document.getElementById('finalDownloadBtn').style.display = 'inline-block';
+    }
 
-            currentArticle = JSON.parse(articleDataString);
-            displayArticle();
-        });
+    async function downloadArticle() {
+      const btn = document.getElementById('finalDownloadBtn');
+      if (!currentArticle || !selectedFormat) {
+        return alert('Silakan pilih format download terlebih dahulu!');
+      }
 
-        function displayArticle() {
-            if (!currentArticle) return;
-            document.getElementById('previewTitle').textContent = currentArticle.title || 'Judul tidak ditemukan';
-            document.getElementById('previewContent').textContent = currentArticle.content || 'Konten tidak ditemukan';
+      btn.innerText = "🔄 Sedang memproses...";
+      btn.disabled = true;
+      const progressBar = document.getElementById('progressBar');
+      const progressContainer = document.getElementById('progressContainer');
+      const statusEl = document.getElementById('downloadStatus');
+
+      progressContainer.style.display = 'block';
+      progressBar.style.width = '0%';
+      statusEl.innerText = 'Mempersiapkan file...';
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 5;
+        progressBar.style.width = `${progress}%`;
+        if (progress >= 100) {
+          clearInterval(interval);
+          statusEl.innerText = 'Mengunduh file...';
+          doDownload();
         }
+      }, 150);
 
-        function selectFormat(format) {
-            window.open('https://impossibleentry.com/28Vpoi', '_blank');
+      async function doDownload() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/download-article`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: currentArticle.title,
+              content: currentArticle.content,
+              format: selectedFormat
+            })
+          });
 
-            selectedFormat = format;
-            document.querySelectorAll('.download-btn').forEach(btn => btn.classList.remove('selected'));
-            document.querySelector(`button.download-btn:nth-child(${format === 'docx' ? 1 : 2})`).classList.add('selected');
-            document.querySelectorAll('.download-btn').forEach(btn => btn.disabled = true);
+          if (!res.ok) throw new Error('Gagal unduh');
+          const blob = await res.blob();
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `artikel.${selectedFormat}`;
+          a.click();
+          URL.revokeObjectURL(a.href);
 
-            startCountdown();
+          statusEl.innerHTML = '<div class="alert alert-success">✅ File berhasil didownload!</div>';
+        } catch (err) {
+          statusEl.innerHTML = `<div class="alert alert-error">❌ Gagal: ${err.message}</div>`;
+        } finally {
+          btn.disabled = false;
+          btn.innerText = "📥 Download Artikel";
         }
+      }
+    }
 
-        function startCountdown() {
-            let countdown = 15;
-            const countdownTimerEl = document.getElementById('countdown-timer');
-            const finalDownloadBtn = document.getElementById('finalDownloadBtn');
-
-            countdownTimerEl.style.display = 'block';
-            finalDownloadBtn.style.display = 'none';
-            countdownTimerEl.innerHTML = `Tunggu: ${countdown}`;
-
-            if (downloadTimer) clearInterval(downloadTimer);
-
-            downloadTimer = setInterval(() => {
-                countdown--;
-                countdownTimerEl.innerHTML = `Tunggu: ${countdown}`;
-
-                if (countdown < 0) {
-                    clearInterval(downloadTimer);
-
-                    countdownTimerEl.style.display = 'none';
-                    finalDownloadBtn.style.display = 'block';
-
-                    const formatText = selectedFormat.toUpperCase();
-                    finalDownloadBtn.innerHTML = `✅ Unduh File ${formatText} Sekarang`;
-                }
-            }, 1000);
-        }
-
-        async function downloadArticle() {
-            if (!currentArticle || !selectedFormat) {
-                alert('Silakan pilih format download terlebih dahulu!');
-                return;
-            }
-
-            const finalDownloadBtn = document.getElementById('finalDownloadBtn');
-            finalDownloadBtn.disabled = true;
-            finalDownloadBtn.textContent = 'Memproses...';
-
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
-            const statusDiv = document.getElementById('downloadStatus');
-
-            progressContainer.style.display = 'block';
-
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += 33.33;
-                progressBar.style.width = `${progress}%`;
-                if (progress >= 100) clearInterval(progressInterval);
-            }, 500);
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/download-article`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        title: currentArticle.title,
-                        content: currentArticle.content,
-                        format: selectedFormat
-                    })
-                });
-
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = `artikel.${selectedFormat}`;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-
-                    statusDiv.innerHTML = '<div class="alert alert-success">✅ File berhasil didownload!</div>';
-                    finalDownloadBtn.style.display = 'none';
-                } else {
-                    throw new Error('Gagal mendownload file');
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                statusDiv.innerHTML = `<div class="alert alert-error">❌ Gagal download: ${error.message}</div>`;
-                finalDownloadBtn.disabled = false;
-                finalDownloadBtn.textContent = `Gagal! Coba Unduh Lagi`;
-            }
-        }
-
-        function backToMain() {
-            sessionStorage.removeItem('currentArticle');
-            window.location.href = 'https://amsinaga.github.io/Ardown/index.html';
-        }
-    </script>
+    function backToMain() {
+      sessionStorage.removeItem('currentArticle');
+      window.location.href = 'https://amsinaga.github.io/Ardown/index.html';
+    }
+  </script>
 </body>
 </html>
