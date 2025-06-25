@@ -110,12 +110,18 @@
     }
     .ads-bottom {
       margin: 40px auto 20px;
-      height: 90px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 14px;
       color: #1e3a8a;
+      width: 100%;
+    }
+    .ads-bottom iframe {
+      width: 100% !important;
+      height: auto !important;
+      max-width: 728px;
+      min-height: 60px;
     }
     .footer {
       font-size: 13px;
@@ -141,7 +147,6 @@
     .dark-toggle { right: 20px; }
     .translate-toggle { right: 70px; }
 
-    /* DARK MODE */
     body.dark-mode {
       background: #0f172a;
       color: #f1f5f9;
@@ -211,16 +216,18 @@
     </div>
 
     <div class="ads-bottom">
-     <script type="text/javascript">
-	atOptions = {
-		'key' : '336b87d7015c3d8574eeac243a36b8e6',
-		'format' : 'iframe',
-		'height' : 90,
-		'width' : 728,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/336b87d7015c3d8574eeac243a36b8e6/invoke.js"></script>
+      <div id="responsive-ad-container" style="width: 100%; max-width: 728px;">
+        <script type="text/javascript">
+          atOptions = {
+            'key': '336b87d7015c3d8574eeac243a36b8e6',
+            'format': 'iframe',
+            'height': 90,
+            'width': 728,
+            'params': {}
+          };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/336b87d7015c3d8574eeac243a36b8e6/invoke.js"></script>
+      </div>
     </div>
 
     <div class="footer">
